@@ -99,7 +99,6 @@ while ($row = $result->fetch_assoc()) {
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <?php foreach ($products as $product): ?>
           <div class="relative w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
-            <!-- Favorite Button -->
             <form method="POST" action="favorite.php" class="absolute top-3 right-3 z-10">
               <input type="hidden" name="produk_id" value="<?= $product['produk_id'] ?>">
               <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors duration-200">
@@ -107,26 +106,27 @@ while ($row = $result->fetch_assoc()) {
               </button>
             </form>
 
-            <!-- Product Image -->
-            <a href="pages/detail.php?id=<?= $product['produk_id'] ?>" class="block p-4">
+            <a href="detail.php?id=<?= $product['produk_id'] ?>" class="block p-4">
               <img class="rounded-t-lg w-full h-48 object-contain" src="uploads/<?= $product['foto_url'] ?>" alt="<?= htmlspecialchars($product['nama_produk']) ?>" />
             </a>
 
-            <!-- Product Info -->
             <div class="px-5 pb-5">
-              <a href="pages/detail.php?id=<?= $product['produk_id'] ?>">
+              <a href="detail.php?id=<?= $product['produk_id'] ?>">
                 <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1"><?= htmlspecialchars($product['nama_produk']) ?></h5>
               </a>
               <p class="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2"><?= htmlspecialchars($product['deskripsi']) ?></p>
 
               <div class="flex items-center justify-between mb-3">
                 <span class="text-2xl font-bold text-gray-900 dark:text-white">Rp<?= number_format($product['harga'], 0, ',', '.') ?></span>
-                <a href="add_to_cart.php?id=<?= $product['produk_id'] ?>" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors duration-200">
-                  Add to Cart
-                </a>
+                <form action="add_to_cart.php" method="POST">
+                    <input type="hidden" name="produk_id" value="<?= $product['produk_id'] ?>">
+                    <input type="hidden" name="quantity" value="1"> <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors duration-200">
+                        Add to Cart
+                    </button>
+                </form>
               </div>
 
-              <a href="checkout.php?id=<?= $product['produk_id'] ?>" class="block w-full text-center text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition-colors duration-200">
+              <a href="checkout_process.php?produk_id=<?= $product['produk_id'] ?>&quantity=1" class="block w-full text-center text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition-colors duration-200">
                 Checkout Sekarang
               </a>
             </div>

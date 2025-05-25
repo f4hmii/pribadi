@@ -6,72 +6,71 @@ include '../db_connection.php'; // Koneksi database
 $kategori = isset($_GET['kategori']) ? $_GET['kategori'] : 'semua';
 
 if ($kategori == 'semua') {
-    $query = "SELECT * FROM produk";
+    // Tampilkan semua produk yang sudah diverifikasi
+    $query = "SELECT * FROM produk WHERE verified = 1 ORDER BY produk_id DESC";
 } else {
-    $ambilKategori = mysqli_query($conn, "SELECT kategori_id FROM kategori WHERE nama_kategori = '$kategori'");
+    // Ambil kategori_id berdasarkan nama kategori, lalu tampilkan produk verified dari kategori itu
+    $ambilKategori = mysqli_query($conn, "SELECT kategori_id FROM kategori WHERE nama_kategori = '" . mysqli_real_escape_string($conn, $kategori) . "'");
     $dataKategori = mysqli_fetch_assoc($ambilKategori);
-    $idKategori = $dataKategori['kategori_id'];
+    $idKategori = $dataKategori['kategori_id'] ?? 0;
 
-    $query = "SELECT * FROM produk WHERE kategori_id = '$idKategori'";
+    $query = "SELECT * FROM produk WHERE kategori_id = '$idKategori' AND verified = 1 ORDER BY produk_id DESC";
 }
 
 $result = mysqli_query($conn, $query);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Produk - <?php echo htmlspecialchars($kategori); ?></title>
-  <script src="https://cdn.tailwindcss.com"></script> <!-- TailwindCSS kalau mau -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
 
 <h1 class="text-3xl font-bold text-center my-6">Produk Kategori: <?php echo htmlspecialchars($kategori); ?></h1>
 
-<div class="flex flex-wrap justify-center gap-6 px-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6">
 <?php
-
 while ($produk = mysqli_fetch_assoc($result)) {
     $gambar = !empty($produk['foto_url']) ? '../uploads/' . htmlspecialchars($produk['foto_url']) : 'gambar/default.jpg';
     ?>
+    <div class="relative w-full bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
+      <form method="POST" action="favorite.php" class="absolute top-3 right-3 z-10">
+        <input type="hidden" name="produk_id" value="<?= $produk['produk_id'] ?>">
+        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors duration-200" title="Tambah Favorit">
+          <i data-feather="heart" class="w-5 h-5"></i>
+        </button>
+      </form>
 
-    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm">
-        <a href="#">
-            <img class="p-8 rounded-t-lg" src="<?= $gambar; ?>" alt="<?= htmlspecialchars($produk['nama_produk']); ?>" />
+      <a href="detail.php?id=<?= $produk['produk_id'] ?>" class="block p-4">
+        <img class="rounded-t-lg w-full h-48 object-contain" src="<?= $gambar ?>" alt="<?= htmlspecialchars($produk['nama_produk']) ?>" />
+      </a>
+
+      <div class="px-5 pb-5">
+        <a href="detail.php?id=<?= $produk['produk_id'] ?>">
+          <h5 class="text-xl font-semibold tracking-tight text-gray-900 mb-1"><?= htmlspecialchars($produk['nama_produk']) ?></h5>
         </a>
-        <div class="px-5 pb-5">
-            <a href="#">
-                <h5 class="text-xl font-semibold tracking-tight text-gray-900"><?= htmlspecialchars($produk['nama_produk']); ?></h5>
-            </a>
-            <div class="flex items-center mt-2.5 mb-5">
-                <div class="flex items-center space-x-1">
-                    <!-- Static rating bintang -->
-                    <?php for ($i = 0; $i < 4; $i++): ?>
-                        <svg class="w-4 h-4 text-yellow-300" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                        </svg>
-                    <?php endfor; ?>
-                    <svg class="w-4 h-4 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                    </svg>
-                </div>
-                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded ms-3">
-                    <?= number_format($produk['rating'] ?? 5.0, 1); ?>
-                </span>
-            </div>
-            <div class="flex items-center justify-between">
-                <span class="text-3xl font-bold text-gray-900">Rp<?= number_format($produk['harga'], 0, ',', '.'); ?></span>
-                <a href="#" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Add to cart</a>
-            </div>
-        </div>
-    </div>
+        <p class="text-sm text-gray-500 mb-3 line-clamp-2"><?= htmlspecialchars($produk['deskripsi']) ?></p>
 
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-2xl font-bold text-gray-900">Rp<?= number_format($produk['harga'], 0, ',', '.') ?></span>
+          <form action="add_to_cart.php" method="POST">
+            <input type="hidden" name="produk_id" value="<?= $produk['produk_id'] ?>">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 transition-colors duration-200">
+              Add to Cart
+            </button>
+          </form>
+        </div>
+
+        <a href="checkout_process.php?produk_id=<?= $produk['produk_id'] ?>&quantity=1" class="block w-full text-center text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200">
+          Checkout Sekarang
+        </a>
+      </div>
+    </div>
 <?php
 }
-
-
 ?>
 </div>
-
-</body>
-</html>
