@@ -1,7 +1,4 @@
-<?php
-session_start();
-include "../view/header.php";
-?>
+
 
 <html lang="en">
  <head>
@@ -15,8 +12,14 @@ include "../view/header.php";
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
  </head>
  <body class="bg-white text-gray-900 font-sans">
+  <?php
+session_start();
+include "../view/header.php";
+?>
  
+  <!-- Main Content -->
   <main class="flex bg-white">
+   <!-- Sidebar -->
    <aside class="bg-gray-100 w-64 p-6 space-y-8">
     <div class="flex items-center space-x-3 border-b border-gray-300 pb-4">
      <i class="fas fa-user-circle text-3xl text-gray-600">
@@ -47,9 +50,9 @@ include "../view/header.php";
        </li>
       </ul>
      </div>
-     <a href="buyer_orders.php" class="font-semibold text-gray-700 cursor-pointer">
+     <p class="font-semibold text-gray-700 cursor-pointer">
       Pesanan Saya
-     </a>
+     </p>
      <p class="font-semibold text-gray-700 cursor-pointer">
       Notifikasi
      </p>
@@ -58,6 +61,7 @@ include "../view/header.php";
      </p>
     </nav>
    </aside>
+   <!-- Content Area -->
    <section class="flex-1 p-10">
     <h1 class="font-extrabold text-2xl text-gray-700 mb-1">
      Lorem ipsum
@@ -66,6 +70,7 @@ include "../view/header.php";
      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
     </p>
     <div class="flex space-x-10">
+     <!-- Left form -->
      <form class="flex flex-col space-y-6 w-2/3">
       <div class="grid grid-cols-3 items-center border-b border-gray-300 pb-6">
        <label class="text-xs text-gray-700">
@@ -101,6 +106,7 @@ include "../view/header.php";
        BTN
       </button>
      </form>
+     <!-- Right image and button -->
      <div class="flex flex-col items-center justify-center border-l border-gray-300 pl-10 w-1/3 space-y-6">
       <div class="rounded-full border border-gray-400 p-4">
        <img alt="Placeholder image of a square with mountain and sun icon inside a circular border" class="w-24 h-24 object-cover" height="100" src="https://storage.googleapis.com/a1aa/image/2cb11cd7-b560-4ba4-cd56-c634ffaad324.jpg" width="100"/>
@@ -112,6 +118,7 @@ include "../view/header.php";
     </div>
    </section>
   </main>
+  <!-- Footer -->
   <footer>
    <div class="bg-gray-500 text-white px-10 py-10">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between md:space-x-20">
