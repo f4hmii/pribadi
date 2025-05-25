@@ -13,12 +13,28 @@ function getCountStatus($conn, $status) {
     $stmt->close();
     return $count;
 }
+function getCountPaymentConfirmation($conn, $seller_id) {
+    $stmt = $conn->prepare("SELECT COUNT(DISTINCT p.pesanan_id)
+                            FROM pesanan p
+                            JOIN pesanan_detail pd ON p.pesanan_id = pd.pesanan_id
+                            JOIN produk pr ON pd.produk_id = pr.produk_id
+                            JOIN pembayaran py ON p.pesanan_id = py.pesanan_id
+                            WHERE pr.seller_id = ? AND py.status_pembayaran = 'pending'");
+    $stmt->bind_param("i", $seller_id);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count;
+}
+
 
 $perluDikirim = getCountStatus($conn, 'dikirim'); 
 $pembatalan = getCountStatus($conn, 'dibatalkan');
 $pengembalian = getCountStatus($conn, 'pengembalian'); 
 $ulasanPerluDibalas = getCountStatus($conn, 'ulasan_perlu_dibalas'); 
-
+$seller_id_session = $_SESSION['id'] ?? 0;
+$menungguKonfirmasiPembayaran = getCountPaymentConfirmation($conn, $seller_id_session);
 $username = $_SESSION['username'] ?? 'Guest';
 $role = $_SESSION['role'] ?? 'Role tidak diketahui';  // Ganti di sini
 ?>
@@ -57,12 +73,18 @@ $role = $_SESSION['role'] ?? 'Role tidak diketahui';  // Ganti di sini
    <section class="flex-1 p-6 space-y-6">
     <!-- Top stats -->
     <div class="bg-gray-600 rounded-md p-6 flex justify-between max-w-full">
-      <div class="flex flex-col items-center space-y-1 cursor-pointer">
-        <a href="detail.php?status=dikirim" class="bg-gray-300 rounded-md w-16 h-16 flex items-center justify-center font-bold text-3xl text-black">
-          <?php echo $perluDikirim; ?>
+          <div class="flex flex-col items-center space-y-1 cursor-pointer">
+        <a href="detail_pesanan_seller.php?status=menunggu_konfirmasi_pembayaran" class="bg-gray-300 rounded-md w-16 h-16 flex items-center justify-center font-bold text-xl text-black">
+            <?php echo $menungguKonfirmasiPembayaran; ?>
+        </a>
+        <p class="text-xs text-black">Konfirmasi Pembayaran</p>
+    </div>
+    <div class="flex flex-col items-center space-y-1 cursor-pointer">
+        <a href="detail_pesanan_seller.php?status=dikirim" class="bg-gray-300 rounded-md w-16 h-16 flex items-center justify-center font-bold text-3xl text-black">
+            <?php echo $perluDikirim; ?>
         </a>
         <p class="text-xs text-black">Perlu dikirim</p>
-      </div>
+    </div>
       <div class="flex flex-col items-center space-y-1 cursor-pointer">
         <a href="detail.php?status=dibatalkan" class="bg-gray-300 rounded-md w-16 h-16 flex items-center justify-center font-bold text-3xl text-black">
           <?php echo $pembatalan; ?>

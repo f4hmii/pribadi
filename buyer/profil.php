@@ -50,9 +50,7 @@ include "../view/header.php";
        </li>
       </ul>
      </div>
-     <p class="font-semibold text-gray-700 cursor-pointer">
-      Pesanan Saya
-     </p>
+     <a href="buyer_orders.php" class="font-semibold text-gray-700 cursor-pointer">Pesanan Saya</a>
      <p class="font-semibold text-gray-700 cursor-pointer">
       Notifikasi
      </p>
