@@ -10,10 +10,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'seller') {
 $seller_id = $_SESSION['id'];
 $action = $_GET['action'] ?? '';
 $pesanan_id = intval($_GET['pesanan_id'] ?? 0);
+$status_filter = $_GET['status_filter'] ?? 'menunggu_konfirmasi_pembayaran'; // Untuk redirect kembali
 
 if ($pesanan_id <= 0) {
     $_SESSION['error_message'] = "ID Pesanan tidak valid.";
-    header("Location: profile_seller.php");
+    header("Location: detail_pesanan_seller.php?status=" . $status_filter);
     exit;
 }
 
@@ -31,7 +32,7 @@ try {
         $stmt_order->bind_param("i", $pesanan_id);
         $stmt_order->execute();
 
-        // STOK BARU DIKURANGI DI SINI SETELAH PEMBAYARAN DIKONFIRMASI
+        // STOK DIKURANGI DI SINI SETELAH PEMBAYARAN DIKONFIRMASI
         $stmt_detail = $conn->prepare("SELECT produk_id, jumlah FROM pesanan_detail WHERE pesanan_id = ?");
         $stmt_detail->bind_param("i", $pesanan_id);
         $stmt_detail->execute();
@@ -48,7 +49,7 @@ try {
             $current_stock = $produk_data['stock'];
 
             if ($current_stock < $jumlah) {
-                throw new Exception("Stok tidak cukup untuk produk ID: " . $produk_id);
+                throw new Exception("Stok tidak cukup untuk produk ID: " . $produk_id . ". Stok tersedia: " . $current_stock);
             }
 
             $new_stock = $current_stock - $jumlah;

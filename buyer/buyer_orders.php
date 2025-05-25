@@ -1,7 +1,7 @@
 <?php
 session_start();
 include '../db_connection.php';
-include "../view/header.php"; // Pastikan header sudah di-include
+include "../view/header.php";
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'buyer') {
     header("Location: ../pages/login.php");
@@ -45,41 +45,45 @@ $result = $stmt->get_result();
     ?>
 
     <?php if ($result->num_rows > 0): ?>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID Pesanan</th>
-                    <th>Tanggal Pesan</th>
-                    <th>Produk</th>
-                    <th>Total Harga</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?= $row['pesanan_id'] ?></td>
-                    <td><?= date('d F Y H:i', strtotime($row['tanggal_pesan'])) ?></td>
-                    <td><?= htmlspecialchars($row['nama_produk_list']) ?></td>
-                    <td>Rp <?= number_format($row['total_harga'], 0, ',', '.') ?></td>
-                    <td><?= htmlspecialchars($row['order_status']) ?></td>
-                    <td>
-                        <?php if ($row['order_status'] === 'dikirim'): ?>
-                            <a href="aksi_pesanan_buyer.php?action=confirm_received&pesanan_id=<?= $row['pesanan_id'] ?>" class="btn btn-success btn-sm" onclick="return confirm('Konfirmasi bahwa barang sudah diterima?')">Konfirmasi Diterima</a>
-                        <?php elseif ($row['order_status'] === 'tertunda_pembayaran'): ?>
-                            <span class="badge bg-warning text-dark">Menunggu Pembayaran</span>
-                        <?php elseif ($row['order_status'] === 'diproses_penjual'): ?>
-                            <span class="badge bg-info">Diproses Penjual</span>
-                        <?php elseif ($row['order_status'] === 'selesai'): ?>
-                            <span class="badge bg-success">Selesai</span>
-                        <?php endif; ?>
-                        <a href="../pages/order_confirmation.php?order_id=<?= $row['pesanan_id'] ?>" class="btn btn-info btn-sm">Detail</a>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Pesanan</th>
+                        <th>Tanggal Pesan</th>
+                        <th>Produk</th>
+                        <th>Total Harga</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= $row['pesanan_id'] ?></td>
+                        <td><?= date('d F Y H:i', strtotime($row['tanggal_pesan'])) ?></td>
+                        <td><?= htmlspecialchars($row['nama_produk_list']) ?></td>
+                        <td>Rp <?= number_format($row['total_harga'], 0, ',', '.') ?></td>
+                        <td><?= htmlspecialchars($row['order_status']) ?></td>
+                        <td>
+                            <?php if ($row['order_status'] === 'dikirim'): ?>
+                                <a href="aksi_pesanan_buyer.php?action=confirm_received&pesanan_id=<?= $row['pesanan_id'] ?>" class="btn btn-success btn-sm" onclick="return confirm('Konfirmasi bahwa barang sudah diterima?')">Konfirmasi Diterima</a>
+                            <?php elseif ($row['order_status'] === 'tertunda_pembayaran'): ?>
+                                <span class="badge bg-warning text-dark">Menunggu Pembayaran</span>
+                            <?php elseif ($row['order_status'] === 'diproses_penjual'): ?>
+                                <span class="badge bg-info">Diproses Penjual</span>
+                            <?php elseif ($row['order_status'] === 'selesai'): ?>
+                                <span class="badge bg-success">Selesai</span>
+                            <?php elseif ($row['order_status'] === 'dibatalkan'): ?>
+                                <span class="badge bg-danger">Dibatalkan</span>
+                            <?php endif; ?>
+                            <a href="../pages/order_confirmation.php?order_id=<?= $row['pesanan_id'] ?>" class="btn btn-info btn-sm">Detail</a>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
     <?php else: ?>
         <div class="alert alert-info">Kamu belum memiliki pesanan.</div>
     <?php endif; ?>

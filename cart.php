@@ -1,12 +1,7 @@
 <?php
-session_start(); // Pastikan session dimulai di awal
+session_start();
 include 'db_connection.php';
-if (isset($_SESSION['error_message'])) {
-    echo '<div style="background-color: #f8d7da; color: #721c24; padding: 10px; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 10px;">';
-    echo '<strong>Error:</strong> ' . $_SESSION['error_message'];
-    echo '</div>';
-    unset($_SESSION['error_message']); // Hapus pesan setelah ditampilkan
-}
+
 // Pastikan pengguna sudah login
 if (!isset($_SESSION['id'])) {
     header("Location: pages/login.php");
@@ -15,10 +10,10 @@ if (!isset($_SESSION['id'])) {
 
 $pengguna_id = $_SESSION['id'];
 
-// Tangani penambahan ke keranjang dari form lain (misal dari detail.php)
-// Ini adalah bagian dari file cart.php yang Anda berikan sebelumnya,
-// namun fungsionalitas tambah ke keranjang sebaiknya ditangani oleh add_to_cart.php.
-// Saya akan biarkan ini untuk kompatibilitas, tetapi direkomendasikan untuk menghapus duplikasi.
+// --- START: MODIFIKASI LOGIKA CART.PHP ---
+// Hapus atau komentari blok ini karena logika add_to_cart sudah di add_to_cart.php
+// Ini untuk menghindari duplikasi dan potensi bug saat POST dari halaman lain ke cart.php
+/*
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['update_cart']) && !isset($_POST['checkout_cart'])) {
     $produk_id = isset($_POST['produk_id']) ? intval($_POST['produk_id']) : 0;
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
@@ -55,7 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['update_cart']) && !i
         $_SESSION['error_message'] = "Produk ID atau Kuantitas tidak valid.";
     }
 }
-
+*/
+// --- END: MODIFIKASI LOGIKA CART.PHP ---
 
 // Tangani update kuantitas dari form di cart itu sendiri
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
@@ -185,11 +181,11 @@ $cart_items = $result_cart->get_result();
                     </table>
                 </div>
                 <div class="mt-6 flex justify-end">
-    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition mr-4">Update Keranjang</button>
-    <button type="submit" name="checkout_cart" value="1" formmethod="POST" formaction="checkout_process.php" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
-        Checkout Semua
-    </button>
-</div>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition mr-4">Update Keranjang</button>
+                    <button type="submit" name="proceed_to_checkout" value="1" formaction="pages/checkout_confirmation.php" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+                        Lanjutkan ke Checkout
+                    </button>
+                </div>
             </form>
         <?php else: ?>
             <p class="text-gray-600">Keranjang kamu kosong.</p>

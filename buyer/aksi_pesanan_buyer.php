@@ -22,14 +22,14 @@ $conn->begin_transaction();
 try {
     if ($action === 'confirm_received') {
         // Update status pesanan di tabel pesanan menjadi 'selesai'
-        $stmt_order = $conn->prepare("UPDATE pesanan SET status = 'selesai' WHERE pesanan_id = ? AND buyer_id = ?");
+        $stmt_order = $conn->prepare("UPDATE pesanan SET status = 'selesai' WHERE pesanan_id = ? AND buyer_id = ? AND status = 'dikirim'");
         $stmt_order->bind_param("ii", $pesanan_id, $buyer_id);
         $stmt_order->execute();
 
         if ($stmt_order->affected_rows > 0) {
             $_SESSION['success_message'] = "Pesanan #" . $pesanan_id . " berhasil dikonfirmasi telah diterima.";
         } else {
-            throw new Exception("Gagal mengkonfirmasi penerimaan pesanan atau pesanan tidak ditemukan.");
+            throw new Exception("Gagal mengkonfirmasi penerimaan pesanan atau pesanan tidak dalam status 'dikirim'.");
         }
     }
 

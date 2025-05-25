@@ -55,6 +55,7 @@ $order_products = $stmt_order_details->get_result();
         <h1 class="text-3xl font-bold mb-6">Detail Pesanan Anda</h1>
 
         <?php
+        // MODIFIKASI INI
         if (isset($_SESSION['success_message'])) {
             echo '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                     <span class="block sm:inline">' . $_SESSION['success_message'] . '</span>
@@ -67,6 +68,7 @@ $order_products = $stmt_order_details->get_result();
                   </div>';
             unset($_SESSION['error_message']);
         }
+        // AKHIR MODIFIKASI
         ?>
 
         <div class="bg-white shadow rounded-lg p-6 mb-6">
